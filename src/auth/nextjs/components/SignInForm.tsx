@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Form,
@@ -7,28 +7,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { oAuthSignIn, signIn } from "../actions"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { signInSchema } from "../schemas"
-import Link from "next/link"
+} from "@/components/ui/form";
+import { oAuthSignIn, signIn } from "../actions";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { signInSchema } from "../schemas";
+import Link from "next/link";
 
 export function SignInForm() {
-  const [error, setError] = useState<string>()
+  const [error, setError] = useState<string>();
   const form = useForm<z.infer<typeof signInSchema>>({
     defaultValues: {
       email: "",
       password: "",
     },
-  })
+  });
 
   async function onSubmit(data: z.infer<typeof signInSchema>) {
-    const error = await signIn(data)
-    setError(error)
+    const error = await signIn(data);
+    setError(error);
   }
 
   return (
@@ -89,5 +89,5 @@ export function SignInForm() {
         </div>
       </form>
     </Form>
-  )
+  );
 }

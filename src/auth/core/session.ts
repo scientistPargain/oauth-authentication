@@ -13,6 +13,7 @@ const sessionSchema = z.object({
 });
 
 type UserSession = z.infer<typeof sessionSchema>;
+// just for this to work with every setup not only node.js specific
 export type Cookies = {
   set: (
     key: string,

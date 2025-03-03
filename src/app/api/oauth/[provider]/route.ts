@@ -23,7 +23,6 @@ export async function GET(
   const provider = z.enum(oAuthProviders).parse(rawProvider);
 
   if (typeof code !== "string" || typeof state !== "string") {
-    console.log("error in youd code or salt");
     redirect(
       `/sign-in?oauthError=${encodeURIComponent(
         "Failed to connect. Please try again."

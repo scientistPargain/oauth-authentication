@@ -10,6 +10,7 @@ const adminRoutes = ["/admin"]
 export async function middleware(request: NextRequest) {
   const response = (await middlewareAuth(request)) ?? NextResponse.next()
 
+  // updating using session expiration whenever he is active so that he don't suddenly while he is on 6days 58min timestamp while his expiration time was 7 days 😂
   await updateUserSessionExpiration({
     set: (key, value, options) => {
       response.cookies.set({ ...options, name: key, value })

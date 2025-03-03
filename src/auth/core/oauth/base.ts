@@ -12,6 +12,7 @@ const CODE_VERIFIER_COOKIE_KEY = "oAuthCodeVerifier";
 // Ten minutes in seconds
 const COOKIE_EXPIRATION_SECONDS = 60 * 10;
 
+// Generic class to implement almost all oath authentications
 export class OAuthClient<
   T,
   P extends { email: string }[] = { email: string }[]
@@ -30,6 +31,7 @@ export class OAuthClient<
     schema: z.ZodSchema<T>;
     parser: (data: T) => { id: string; email: string; name: string };
   };
+  // required for github only rn
   private readonly userEmails?: {
     schema: z.ZodSchema<P>;
     parser: (data: P) => { emails: { email: string }[] };
@@ -98,7 +100,6 @@ export class OAuthClient<
   }
 
   async fetchUser(code: string, state: string, cookies: Pick<Cookies, "get">) {
-    console.log("code: state: ", code, state);
     const isValidState = await validateState(state, cookies);
     if (!isValidState) throw new InvalidStateError();
 
@@ -106,7 +107,6 @@ export class OAuthClient<
       code,
       getCodeVerifier(cookies)
     );
-    console.log("access token, token Type: ", accessToken, tokenType);
 
     const userData = await fetch(this.urls.user, {
       headers: {
@@ -115,10 +115,10 @@ export class OAuthClient<
     })
       .then((res) => res.json())
       .then((rawData) => {
-        console.log("raw data is : ", rawData);
+        // console.log("raw data is : ", rawData);
         const { data, success, error } =
           this.userInfo.schema.safeParse(rawData);
-        console.log("data, success: ", data, success);
+        // console.log("data, success: ", data, success);
         if (!success) throw new InvalidUserError(error);
 
         return data;
@@ -134,9 +134,7 @@ export class OAuthClient<
       })
         .then((res) => res.json())
         .then((rawData) => {
-          console.log("raw data is : ", rawData);
           const result = this.userEmails?.schema.safeParse(rawData);
-          console.log("result: ", result);
           if (!result?.success && result?.error) {
             throw new InvalidUserError(result.error);
           }
