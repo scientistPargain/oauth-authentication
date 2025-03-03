@@ -1,6 +1,6 @@
-import { env } from "@/data/env/server"
-import { OAuthClient } from "./base"
-import { z } from "zod"
+import { env } from "@/data/env/server";
+import { OAuthClient } from "./base";
+import { z } from "zod";
 
 export function createGoogleOAuthClient() {
   return new OAuthClient({
@@ -19,12 +19,14 @@ export function createGoogleOAuthClient() {
         given_name: z.string().nullable(),
         family_name: z.string().nullable(),
         email: z.string().email(),
+        picture: z.string().nullable(),
       }),
-      parser: user => ({
+      parser: (user) => ({
         id: user.sub,
-        name: user.given_name + ' ' + user.family_name,
+        name: user.given_name + " " + user.family_name,
         email: user.email,
+        imageUrl: user.picture || "",
       }),
     },
-  })
+  });
 }

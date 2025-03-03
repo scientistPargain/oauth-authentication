@@ -33,7 +33,7 @@ export async function GET(
   const oAuthClient = getOAuthClient(provider);
   try {
     const oAuthUser = await oAuthClient.fetchUser(code, state, await cookies());
-    console.log('user got: ', oAuthUser)
+    console.log("user got: ", oAuthUser);
     const user = await connectUserToAccount(oAuthUser, provider);
     await createUserSession(user, await cookies());
   } catch (error) {
@@ -49,13 +49,18 @@ export async function GET(
 }
 
 function connectUserToAccount(
-  { id, email, name }: { id: string; email: string; name: string },
+  {
+    id,
+    email,
+    name,
+    imageUrl,
+  }: { id: string; email: string; name: string; imageUrl?: string },
   provider: OAuthProvider
 ) {
   return db.transaction(async (trx) => {
     let user = await trx.query.UserTable.findFirst({
       where: eq(UserTable.email, email),
-      columns: { id: true, role: true },
+      columns: { id: true, role: true, imageUrl: true },
     });
 
     if (user == null) {
@@ -64,9 +69,22 @@ function connectUserToAccount(
         .values({
           email: email,
           name: name,
+          imageUrl: imageUrl,
         })
-        .returning({ id: UserTable.id, role: UserTable.role });
+        .returning({
+          id: UserTable.id,
+          role: UserTable.role,
+          imageUrl: UserTable.imageUrl,
+        });
       user = newUser;
+    }
+
+    if (!user.imageUrl) {
+      console.log("updating image url: trx", imageUrl);
+      await trx
+        .update(UserTable)
+        .set({ imageUrl: imageUrl || null })
+        .where(eq(UserTable.id, user.id));
     }
 
     await trx

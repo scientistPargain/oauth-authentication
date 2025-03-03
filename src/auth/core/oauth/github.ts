@@ -20,11 +20,13 @@ export function createGithubOAuthClient() {
         name: z.string().nullable(),
         login: z.string(),
         email: z.string().email().nullable(),
+        avatar_url: z.string().nullable(),
       }),
       parser: (user) => ({
         id: user.id.toString(),
         name: user.name ?? user.login,
         email: user?.email || "", // if someone have set their email private then this will fail.
+        imageUrl: user?.avatar_url || undefined,
       }),
     },
     userEmails: {

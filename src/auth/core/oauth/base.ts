@@ -29,7 +29,7 @@ export class OAuthClient<
   };
   private readonly userInfo: {
     schema: z.ZodSchema<T>;
-    parser: (data: T) => { id: string; email: string; name: string };
+    parser: (data: T) => { id: string; email: string; name: string, imageUrl?: string };
   };
   // required for github only rn
   private readonly userEmails?: {
@@ -62,7 +62,7 @@ export class OAuthClient<
     };
     userInfo: {
       schema: z.ZodSchema<T>;
-      parser: (data: T) => { id: string; email: string; name: string };
+      parser: (data: T) => { id: string; email: string; name: string, imageUrl?: string };
     };
     userEmails?: {
       schema: z.ZodSchema<P>;
@@ -115,7 +115,7 @@ export class OAuthClient<
     })
       .then((res) => res.json())
       .then((rawData) => {
-        // console.log("raw data is : ", rawData);
+        console.log("raw data is : ", rawData);
         const { data, success, error } =
           this.userInfo.schema.safeParse(rawData);
         // console.log("data, success: ", data, success);
